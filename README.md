@@ -19,8 +19,15 @@ Example 1:
   - "<TAG_IFNOT>terraform -version<TAG_TONFI><TAG_CMD>git clone https://github.com/tfutils/tfenv.git /home/ec2-user/.tfenv && sudo ln -s /home/ec2-user/.tfenv/bin/* /usr/local/bin && /usr/local/bin/tfenv install latest && /usr/local/bin/tfenv install 0.11.6 && tfenv use latest<TAG_DMC>"
   
 if condition statement "terraform -version" resolves to False which means terraform is not installed, then will run subsequent commands to install tfenv and both 0.11.6 and latest versions of terraform
-  
-  
+
+
+Example 2:
+
+ - "<TAG_EXP>TAG_PASS_KMS_ID<TAG_PXE><TAG_CMD>aws kms create-key --profile ${TAG_AWS_CLI_PROFILE} --tags TagKey=environment,TagValue=${TAG_ENVIRONMENT} TagKey=tag_app,TagValue=${TAG_APP_NAME} TagKey=usage,TagValue=ec2-passwd --description \"kms key for encrypt ec2 bastion key\"  | jq -r '.KeyMetadata.\"KeyId\"'<TAG_DMC>"
+
+The command between <TAG_CMD> and <TAG_DMC> creates KMS key using AWS CLI and its corresponding key id is stored as a variable TAG_PASS_KMS_ID which can be used in future statements
+
+
 
 
 
