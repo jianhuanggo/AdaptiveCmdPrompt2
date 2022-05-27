@@ -8,7 +8,7 @@ In addition, it currently provides prebuild tagging to facilitate some activitie
 - <TAG_IFNOT> conditional logic to only execute subsequent statement if previous statement returns False
 - <TAG_RETRY> retry the statement, it doesn't have to be the original statement
 
-- <TAG_EXPORT> Inject additional variable to environment variable bank
+- <TAG_EXP> Inject additional variable to environment variable bank
 - <TAG_WORKDIR> Setting working directory
 - <TAG_RSTR> Random string generate, can be used to generate password on the fly
 - <TAG_COMMAND> regular command line statement
