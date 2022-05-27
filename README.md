@@ -16,11 +16,11 @@ In addition, it currently provides prebuild tagging to facilitate some activitie
   
   
 Example 1:
-  
+```
   - "<TAG_IFNOT>terraform -version<TAG_TONFI><TAG_CMD>git clone https://github.com/tfutils/tfenv.git /home/ec2-user/.tfenv && sudo ln -s /home/ec2-user/.tfenv/bin/* /usr/local/bin && /usr/local/bin/tfenv install latest && /usr/local/bin/tfenv install 0.11.6 && tfenv use latest<TAG_DMC>"
   
 if condition statement "terraform -version" resolves to False which means terraform is not installed, then will run subsequent commands to install tfenv and both 0.11.6 and latest versions of terraform
-
+```
 
 Example 2:
 
