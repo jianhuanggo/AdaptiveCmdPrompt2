@@ -42,11 +42,13 @@ The AWS CLI command between <TAG_CMD> and <TAG_DMC> is trying to create an alias
 
 Example 4:
 ```
-"<TAG_EXP>TAG_RDS_PASSWD<TAG_PXE><TAG_RSTR>tag;12<TAG_RTSR>"
+ - "<TAG_EXP>TAG_RDS_PASSWD<TAG_PXE><TAG_RSTR>tag;12<TAG_RTSR>"
 ```
 with <TAG_RSTR>tag;12<TAG_RTSR>, it tells AdaptiveCmdPrompt to generate a random string 12 characters long with "tag" as prefix and then store it into the variable TAG_RDS_PASSWD which later can be used in the database creation command as a password.
 
 
+
+Here is an example where we integrate some AWS CLI commands with Terraform 
 
 
 
