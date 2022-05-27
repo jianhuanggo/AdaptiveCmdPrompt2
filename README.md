@@ -30,7 +30,7 @@ The command between <TAG_CMD> and <TAG_DMC> creates KMS key using AWS CLI and it
 
 Example 3:
 
- - "<TAG_CMD>aws kms create-alias --profile ${TAG_AWS_CLI_PROFILE} --alias-name alias/kms-4_ec2_app_${TAG_APP_NAME}_${TAG_ENVIRONMENT} --target-key-id ${TAG_PASS_KMS_ID}<TAG_DMC><TAG_RT>aws kms delete-alias --profile ${TAG_AWS_CLI_PROFILE} --alias-name alias/kms-4_ec2_app_${TAG_APP_NAME}_${TAG_ENVIRONMENT}<TAG_TR>"
+ - "<TAG_CMD>aws kms create-alias --profile $${TAG_AWS_CLI_PROFILE} --alias-name alias/kms-4_ec2_app_${TAG_APP_NAME}_${TAG_ENVIRONMENT} --target-key-id ${TAG_PASS_KMS_ID}<TAG_DMC><TAG_RT>aws kms delete-alias --profile ${TAG_AWS_CLI_PROFILE} --alias-name alias/kms-4_ec2_app_${TAG_APP_NAME}_${TAG_ENVIRONMENT}<TAG_TR>"
 
 The AWS CLI command between <TAG_CMD> and <TAG_DMC> is trying to create an alias for KMS key and if that is not successful, another AWS CLI command between <TAG_RT> and <TAG_TR> gets invoked to delete any existing alias with the same name and then AdaptiveCmdPrompt will retry the original statement and fails only if retry also fails.
 
