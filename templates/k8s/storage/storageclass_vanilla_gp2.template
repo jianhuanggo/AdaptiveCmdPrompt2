@@ -1,0 +1,19 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"storage.k8s.io/v1","kind":"StorageClass","metadata":{"annotations":{"storageclass.beta.kubernetes.io/is-default-class":"true"},"creationTimestamp":"2020-03-13T16:35:00Z","labels":{"k8s-addon":"storage-aws.addons.k8s.io"},"name":"gp2","resourceVersion":"41","selfLink":"/apis/storage.k8s.io/v1/storageclasses/gp2","uid":"1a4ffac9-7d05-417f-8926-90b2e0c8c76a"},"parameters":{"type":"gp2"},"provisioner":"kubernetes.io/aws-ebs","reclaimPolicy":"Delete","volumeBindingMode":"Immediate"}
+    storageclass.beta.kubernetes.io/is-default-class: "true"
+  labels:
+    k8s-addon: storage-aws.addons.k8s.io
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  name: gp2
+parameters:
+  type: gp2
+  encrypted: "true"
+  kmsKeyId: <TAG_KMS_WORKER_NODE_KEY_ARN>
+provisioner: kubernetes.io/aws-ebs
+reclaimPolicy: Delete
+volumeBindingMode: Immediate

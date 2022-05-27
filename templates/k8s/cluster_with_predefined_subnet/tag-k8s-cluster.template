@@ -1,0 +1,98 @@
+apiVersion: kops.k8s.io/v1alpha2
+kind: Cluster
+metadata:
+  generation: 1
+  name: tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu
+spec:
+  api:
+    loadBalancer:
+      type: Internal
+      sslCertificate: <TAG_API_SERVER_CERTS>
+  authorization:
+    rbac: {}
+  channel: stable
+  cloudLabels:
+    kubernetes.io/cluster/tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu: owned
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  cloudProvider: aws
+  configBase: s3://state.tag-k8s-<TAG_ENVIRONMENT>/tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu
+  etcdClusters:
+  - cpuRequest: 200m
+    etcdMembers:
+    - encryptedVolume: true
+      instanceGroup: master-us-east-1a
+      name: a
+    - encryptedVolume: true
+      instanceGroup: master-us-east-1b
+      name: b
+    - encryptedVolume: true
+      instanceGroup: master-us-east-1c
+      name: c
+    memoryRequest: 100Mi
+    name: main
+  - cpuRequest: 100m
+    etcdMembers:
+    - encryptedVolume: true
+      instanceGroup: master-us-east-1a
+      name: a
+    - encryptedVolume: true
+      instanceGroup: master-us-east-1b
+      name: b
+    - encryptedVolume: true
+      instanceGroup: master-us-east-1c
+      name: c
+    memoryRequest: 100Mi
+    name: events
+  iam:
+    allowContainerRegistry: true
+    legacy: false
+  kubelet:
+    anonymousAuth: false
+  kubernetesApiAccess:
+  - <TAG_NETWORK_CIDR>
+  kubernetesVersion: 1.16.7
+  masterInternalName: api.internal.tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu
+  masterPublicName: api.tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu
+  networkCIDR: <TAG_NETWORK_CIDR>
+  networkID: <TAG_VPC_ID>
+  networking:
+    canal: {}
+  nonMasqueradeCIDR: 100.64.0.0/10
+  sshAccess:
+  - <TAG_NETWORK_BASTION_CIDR> 
+  subnets:
+  - id: <TAG_NETWORK_PRIVATE_SUBNET_AZ1_ID>
+    egress: <TAG_NETWORK_AZ1_NAT_ID>
+    name: us-east-1a
+    type: Private
+    zone: us-east-1a
+  - id: <TAG_NETWORK_PRIVATE_SUBNET_AZ2_ID>
+    egress: <TAG_NETWORK_AZ2_NAT_ID>
+    name: us-east-1b
+    type: Private
+    zone: us-east-1b
+  - id: <TAG_NETWORK_PRIVATE_SUBNET_AZ3_ID>
+    egress: <TAG_NETWORK_AZ3_NAT_ID>
+    name: us-east-1c
+    type: Private
+    zone: us-east-1c
+  - id: <TAG_NETWORK_PUBLIC_SUBNET_AZ1_ID>
+    name: utility-us-east-1a
+    type: Utility
+    zone: us-east-1a
+  - id: <TAG_NETWORK_PUBLIC_SUBNET_AZ2_ID>
+    name: utility-us-east-1b
+    type: Utility
+    zone: us-east-1b
+  - id: <TAG_NETWORK_PUBLIC_SUBNET_AZ3_ID>
+    name: utility-us-east-1c
+    type: Utility
+    zone: us-east-1c
+  topology:
+    bastion:
+      bastionPublicName: bastion.tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu
+    dns:
+      type: Public
+    masters: private
+    nodes: private

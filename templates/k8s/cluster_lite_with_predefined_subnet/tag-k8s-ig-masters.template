@@ -1,0 +1,23 @@
+apiVersion: kops.k8s.io/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  name: master-<TAG_ENVIRONMENT_ZONE>
+spec:
+  image: amazon/amzn2-ami-hvm-2.0.20200917.0-x86_64-gp2
+  machineType: t3.large
+  maxSize: 1
+  minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: master-us-<TAG_ENVIRONMENT_ZONE>
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  cloudLabels:
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  role: Master
+  subnets:
+  - <TAG_ENVIRONMENT_ZONE>

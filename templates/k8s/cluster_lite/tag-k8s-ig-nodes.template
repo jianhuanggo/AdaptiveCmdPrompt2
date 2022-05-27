@@ -1,0 +1,88 @@
+apiVersion: kops.k8s.io/v1alpha2
+kind: InstanceGroup
+metadata:
+  creationTimestamp: "2020-02-28T19:55:04Z"
+  labels:
+    kops.k8s.io/cluster: tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core    
+  name: nodes
+spec:
+  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
+  machineType: t3.large
+  maxSize: 10
+  minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: nodes
+    on-demand: "true"
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core    
+  cloudLabels:
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core    
+  role: Node
+  subnets:
+  - us-east-1a
+  
+---
+
+apiVersion: kops/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  name: nodes-spot-large-1
+spec:
+  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
+  machineType: r5.large
+  maxSize: 10
+  minSize: 0
+  nodeLabels:
+    kops.k8s.io/instancegroup: nodes-spot-large-1
+    on-demand: "false"
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  cloudLabels:
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  role: Node
+  subnets:
+  - us-east-1a
+  taints:
+  - on-demand=false:NoSchedule
+  - on-demand=false:NoExecute
+  - app-size=large:NoSchedule
+
+---    
+
+apiVersion: kops/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  name: nodes-spot-general-1
+spec:
+  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
+  machineType: t3.large
+  #maxPrice: "0.0170"
+  maxSize: 10
+  minSize: 0
+  nodeLabels:
+    kops.k8s.io/instancegroup: nodes-spot-general-1
+    on-demand: "false"
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  cloudLabels:
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  role: Node
+  subnets:
+  - us-east-1a
+  taints:
+  - on-demand=false:NoSchedule
+  - on-demand=false:NoExecute
+  - app-size=general:Schedule

@@ -1,0 +1,14 @@
+{
+ 	"BlockDeviceMappings": [
+     				{
+                        "DeviceName": "/dev/xvda",
+                        "Ebs": {
+                            "DeleteOnTermination": true,
+                            "VolumeSize": 32,
+                            "VolumeType": "gp2",
+                            "Encrypted": true,
+                            "KmsKeyId": "<TAG_KMS_KEY_ID>"
+                        }
+                    }
+                ]
+}

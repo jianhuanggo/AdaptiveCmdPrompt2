@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-<TAG_ENVIRONMENT>-<TAG_AWS_ZONE>
+  labels:
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+spec:
+  storageClassName: storageclass-<TAG_ENVIRONMENT>-<TAG_AWS_ZONE>
+  accessModes:
+   -  ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

@@ -1,0 +1,29 @@
+variable "project_name" {
+  description = "Name of Project"
+  type        = string
+  default     = "aws-tag-<TAG_ENVIRONMENT>"
+}
+
+variable "app_name" {
+  description = "Name of application"
+  type        = string
+  default     = "<TAG_APP_NAME>"
+}
+
+variable "account_number" {
+  description = "aws account number"
+  type        = string
+  default     = "<TAG_ACCOUNT_NUMBER>"
+}
+
+variable "tag_environment" {
+  description = "tag environment"
+  type        = string
+  default     = "<TAG_ENVIRONMENT>"
+}
+
+variable "tag_credential_filepath" {
+  description = "filepath for aws credential"
+  type        = string
+  default     = "<TAG_CREDENTIAL_FILEPATH>"
+}

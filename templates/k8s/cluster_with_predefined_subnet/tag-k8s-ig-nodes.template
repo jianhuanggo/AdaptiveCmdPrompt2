@@ -1,0 +1,139 @@
+### Instance Group for production cluster is vastly different from dev and test
+### We will create 4 Instance Groups as following
+### #1 on-demand all-purpose Instance Group to host non-memory intensive app such as fundrequest
+### #2 spot all-purpose Instance Group to host any non-memory intensive app for short-term usage due to unexpected events
+### #3 on-demand memory intensive Instance Group to host memory intensive app such as pt
+### #2 spot memory intensive Instance Group to host any memory intensive app for short-term usage due to unexpected events
+apiVersion: kops.k8s.io/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  name: nodes
+spec:
+  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
+  machineType: t3.large
+  maxSize: 5
+  minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: nodes
+    on-demand: "true"
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  cloudLabels:
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  role: Node
+  subnets:
+  - us-east-1a
+  - us-east-1b
+  - us-east-1c
+
+---
+
+# Node for large app such as pt and fusion
+# The autoscaling group is created but in the "hibernation" state with the intention to save money. 
+# It will not spawn off any node since we don't have a app in k8s requires it
+# As soon an app is tagged with a label which specified by us, K8s will automatically add this type of node to it
+# There is no intelligence for k8s to perform this type of calculation on-demand right now.
+apiVersion: kops/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  name: nodes-memory-1
+spec:
+  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
+  machineType: r5.xlarge
+  maxSize: 3
+  minSize: 0
+  nodeLabels:
+    kops.k8s.io/instancegroup: nodes-memory-1
+    on-demand: "true"
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  cloudLabels:
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  role: Node
+  subnets:
+  - us-east-1a
+  - us-east-1b
+  - us-east-1c
+  taints:
+  - on-demand=true:NoSchedule
+  - load-size=large:NoSchedule
+
+---
+
+# spot instance group for appropriate jobs such as temp tasks, 
+# will spawn off automatically when we need it by assign the app with correct labels
+apiVersion: kops/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  name: nodes-spot-1
+spec:
+  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
+  machineType: t3.large
+  maxSize: 3
+  minSize: 0
+  nodeLabels:
+    kops.k8s.io/instancegroup: nodes-spot-1
+    on-demand: "false"
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  cloudLabels:
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  role: Node
+  subnets:
+  - us-east-1a
+  - us-east-1b
+  - us-east-1c
+  taints:
+  - on-demand=false:NoSchedule
+  - on-demand=false:NoExecute
+  - app-size=general:NoSchedule
+  - app-size=general:NoExecute
+
+---
+
+apiVersion: kops/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  name: nodes-memory-spot-1
+spec:
+  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
+  machineType: r5.xlarge
+  maxSize: 3
+  minSize: 0
+  nodeLabels:
+    kops.k8s.io/instancegroup: nodes-memory-spot-1
+    on-demand: "false"
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  cloudLabels:
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  role: Node
+  subnets:
+  - us-east-1a
+  - us-east-1b
+  - us-east-1c
+  taints:
+  - on-demand=false:NoSchedule
+  - on-demand=false:NoExecute
+  - app-size=large:NoSchedule
+  - app-size=large:NoExecute

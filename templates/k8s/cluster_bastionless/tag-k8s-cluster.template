@@ -1,0 +1,96 @@
+apiVersion: kops.k8s.io/v1alpha2
+kind: Cluster
+metadata:
+  generation: 1
+  name: tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu
+spec:
+  api:
+    loadBalancer:
+      type: Internal
+      sslCertificate: <TAG_API_SERVER_CERTS>
+  authorization:
+    rbac: {}
+  channel: stable
+  cloudLabels:
+    kubernetes.io/cluster/tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu: owned
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  cloudProvider: aws
+  configBase: s3://state.tag-k8s-<TAG_ENVIRONMENT>/tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu
+  etcdClusters:
+  - cpuRequest: 200m
+    etcdMembers:
+    - encryptedVolume: true
+      instanceGroup: master-us-east-1a
+      name: a
+    - encryptedVolume: true
+      instanceGroup: master-us-east-1b
+      name: b
+    - encryptedVolume: true
+      instanceGroup: master-us-east-1c
+      name: c
+    memoryRequest: 100Mi
+    name: main
+  - cpuRequest: 100m
+    etcdMembers:
+    - encryptedVolume: true
+      instanceGroup: master-us-east-1a
+      name: a
+    - encryptedVolume: true
+      instanceGroup: master-us-east-1b
+      name: b
+    - encryptedVolume: true
+      instanceGroup: master-us-east-1c
+      name: c
+    memoryRequest: 100Mi
+    name: events
+  iam:
+    allowContainerRegistry: true
+    legacy: false
+  kubelet:
+    anonymousAuth: false
+  kubernetesApiAccess:
+  - <TAG_NETWORK_CIDR>
+  kubernetesVersion: 1.16.7
+  masterInternalName: api.internal.tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu
+  masterPublicName: api.tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu
+  networkCIDR: <TAG_NETWORK_CIDR>
+  networkID: <TAG_VPC_ID>
+  networking:
+    canal: {}
+  nonMasqueradeCIDR: 100.64.0.0/10
+  sshAccess:
+  - <TAG_NETWORK_BASTION_CIDR> 
+  subnets:
+  - cidr: <TAG_NETWORK_CIDR_FIRST3OCT>.96/27
+    egress: nat-03cfdc43a93a7ecd7
+    name: us-east-1a
+    type: Private
+    zone: us-east-1a
+  - cidr: <TAG_NETWORK_CIDR_FIRST3OCT>.128/27
+    egress: nat-03cfdc43a93a7ecd7
+    name: us-east-1b
+    type: Private
+    zone: us-east-1b
+  - cidr: <TAG_NETWORK_CIDR_FIRST3OCT>.160/27
+    egress: nat-03cfdc43a93a7ecd7
+    name: us-east-1c
+    type: Private
+    zone: us-east-1c
+  - id: subnet-034fb12a66c4eebd9
+    name: utility-us-east-1a
+    type: Utility
+    zone: us-east-1a
+  - id: subnet-063a0d4dfb2d5eb2d
+    name: utility-us-east-1b
+    type: Utility
+    zone: us-east-1b
+  - id: subnet-0cd23c86aeaf210f5
+    name: utility-us-east-1c
+    type: Utility
+    zone: us-east-1c
+  topology:
+    dns:
+      type: Public
+    masters: private
+    nodes: private

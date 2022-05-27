@@ -1,0 +1,18 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"storage.k8s.io/v1","kind":"StorageClass","metadata":{"annotations":{},"creationTimestamp":"2020-03-13T16:35:00Z","labels":{"k8s-addon":"storage-aws.addons.k8s.io"},"name":"default","resourceVersion":"40","selfLink":"/apis/storage.k8s.io/v1/storageclasses/default","uid":"9a187673-04f5-44f8-8ec6-15b1cf36cf8f"},"parameters":{"type":"gp2"},"provisioner":"kubernetes.io/aws-ebs","reclaimPolicy":"Delete","volumeBindingMode":"Immediate"}
+  labels:
+    k8s-addon: storage-aws.addons.k8s.io
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  name: default
+parameters:
+  type: gp2
+  encrypted: "true"
+  kmsKeyId: <TAG_KMS_WORKER_NODE_KEY_ARN>
+provisioner: kubernetes.io/aws-ebs
+reclaimPolicy: Delete
+volumeBindingMode: Immediate

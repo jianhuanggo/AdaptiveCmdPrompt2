@@ -1,0 +1,23 @@
+apiVersion: kops.k8s.io/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: tag-k8s-<TAG_ENVIRONMENT>.tag.gatech.edu
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  name: bastions
+spec:
+  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
+  machineType: t3.micro
+  maxSize: 1
+  minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: bastions
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  cloudLabels:
+    environment: <TAG_ENVIRONMENT>
+    component: tag-core
+  role: Bastion
+  subnets:
+  - utility-us-east-1a
