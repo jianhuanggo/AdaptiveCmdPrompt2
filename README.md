@@ -1,13 +1,12 @@
 # AdaptiveCmdPrompt 
 
-AdaptiveCmdPrompt is a gluing tool and a companion to terraform, not only it can be an effective wrapper, replacing the function of shell wrapper, because it is written in a modern program language and agnostic to cloud vendors, we can extend it to serve any function of future, measured or far away.  Such flexibility is welcomed since we don't need to fit all infrastructure as code exclusively in Terraform, SDKs, CDKs or CLI in one implementation, rather, we can pick and choose the best of all worlds and then use AdaptiveCmdPrompt to integrate into one piece.  
+AdaptiveCmdPrompt is a gluing tool and a companion to terraform, not only it can be an effective wrapper, replacing the function of shell wrapper, because it is written in a modern program language and agnostic to cloud vendors, we can extend it to serve any function of future, measured or far away.  Such flexibility is welcomed since we don't need to fit all infrastructure as code exclusively in Terraform, SDKs, CDKs or CLI in one implementation, rather, we can pick and choose the best of all worlds and then use AdaptiveCmdPrompt to integrate into one piece.  In addition, AdaptiveCmdPrompt can be extended to call any API free from terraform constrains and can even modify terraform scripts on the fly if needed. 
 
 In addition, it currently provides prebuild tagging to facilitate some activities. 
 
 - <TAG_IF> conditional logic to only execute subsequent statement if previous statement returns True  
 - <TAG_IFNOT> conditional logic to only execute subsequent statement if previous statement returns False
 - <TAG_RETRY> retry the statement, it doesn't have to be the original statement
-
 - <TAG_EXP> Inject additional variable to environment variable bank
 - <TAG_WORKDIR> Setting working directory
 - <TAG_RSTR> Random string generate, can be used to generate password on the fly
@@ -48,9 +47,11 @@ with <TAG_RSTR>tag;12<TAG_RTSR>, it tells AdaptiveCmdPrompt to generate a random
 
 
 
-Here is an example where we integrate some AWS CLI commands with Terraform 
+In templates folder:
 
+We will find a set of terraform modules to terraform a small AWS environment with compute and store.
 
+We will also find a set of k8s templates for variety of settings.  
 
 
 
