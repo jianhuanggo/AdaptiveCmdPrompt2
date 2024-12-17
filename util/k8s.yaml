@@ -1,0 +1,159 @@
+
+const http = require('http');
+const port = 8080;
+const server = http.createServer((req, res) => {
+  res.end('Hello from Kubernetes on port 8080!');
+});
+server.listen(port, () => {
+  console.log(`Server running on http://0.0.0.0:${port}`);
+});
+Dockerfile:
+
+Dockerfile
+Copy code
+FROM node:16-alpine
+WORKDIR /app
+COPY app.js .
+CMD ["node", "app.js"]
+Build and push to ECR:
+
+Create an ECR repository (if not already created):
+
+aws ecr create-repository --repository-name mytestapp --region us-east-1
+Note the repository URI (e.g., 123456789012.dkr.ecr.us-east-1.amazonaws.com/mytestapp).
+
+Authenticate Docker to ECR:
+
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 123456789012.dkr.ecr.us-east-1.amazonaws.com
+Build, tag, and push:
+
+
+docker build -t mytestapp:latest .
+docker tag mytestapp:latest 123456789012.dkr.ecr.us-east-1.amazonaws.com/mytestapp:latest
+docker push 123456789012.dkr.ecr.us-east-1.amazonaws.com/mytestapp:latest
+Your image is now in ECR, ready for Kubernetes to pull.
+
+2. Confirm AWS Load Balancer Controller Installation
+You need the AWS Load Balancer Controller in your cluster to create ALBs from Ingress objects. If not done, follow instructions here:
+
+Installing the AWS Load Balancer Controller
+
+https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html
+
+Once installed, you should have a running aws-load-balancer-controller deployment in your kube-system namespace:
+
+
+kubectl get deployment -n kube-system aws-load-balancer-controller
+
+
+3. Kubernetes Manifests (Deployment, Service, Ingress)
+Create a manifest file that includes a Deployment, a Service, and an Ingress. We will separate them into three YAML manifests for clarity. The app will run on port 8080, and we’ll expose that via a Service of type ClusterIP. Then we’ll create an Ingress that uses the AWS Load Balancer Controller annotations to provision an ALB.
+
+deployment.yaml:
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mytestapp
+  labels:
+    app: mytestapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mytestapp
+  template:
+    metadata:
+      labels:
+        app: mytestapp
+    spec:
+      containers:
+      - name: mytestapp
+        image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/mytestapp:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+
+service.yaml:
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mytestapp-service
+spec:
+  selector:
+    app: mytestapp
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
+ingress.yaml:
+
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mytestapp-ingress
+  annotations:
+    # The following annotation tells the AWS Load Balancer Controller to create an ALB
+    kubernetes.io/ingress.class: alb
+    # External scheme for internet-facing ALB (default)
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    # Subnets the ALB will use (replace with your own private subnets if needed)
+    # This depends on your environment. For a public-facing ALB, use public subnets tagged for ALB.
+    # If you've configured the controller with auto-discovery, omit these and it will pick up automatically.
+    # alb.ingress.kubernetes.io/subnets: subnet-abc123,subnet-def456
+    # Health check path
+    alb.ingress.kubernetes.io/healthcheck-path: /
+    # The target type (instance, ip). Usually `ip` is recommended for EKS.
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  rules:
+    - host: mytestapp.example.com # replace with your domain if you have one or omit host for testing
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mytestapp-service
+                port:
+                  number: 8080
+
+
+Note: If you don’t have a hosted domain, you can omit the host line and just rely on the generated ALB DNS name. For testing, remove the host: mytestapp.example.com line. You’ll access via the ALB’s DNS.
+
+4. Apply the Manifests
+
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+kubectl apply -f ingress.yaml
+Check that the Deployment and Service are running:
+
+kubectl get deployment mytestapp
+kubectl get svc mytestapp-service
+Once the Ingress is applied, the AWS Load Balancer Controller will create an ALB. This can take a minute or two.
+
+Check the Ingress status:
+
+kubectl get ingress mytestapp-ingress
+You should see an ADDRESS field populated with the ALB’s DNS name once it’s ready.
+
+5. Access the Application
+Open a browser and go to the DNS name from the Ingress (or curl it):
+
+curl http://<ALB_DNS_NAME>/
+You should see the response: Hello from Kubernetes on port 8080!
+
+If you specified a host and have a DNS CNAME record pointing to the ALB’s DNS, use that host in the request.
+
+6. Optional: Route53 and TLS
+For production, you might associate a custom domain with the ALB by creating a CNAME in Route53 pointing to the ALB’s DNS name.
+You can also enable TLS by configuring an ACM certificate and adding annotations like:
+
+
+alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:123456789012:certificate/xxxxxxx
+alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80,"HTTPS":443}]'
+
+And adjusting the Ingress spec.rules and spec.tls accordingly.
