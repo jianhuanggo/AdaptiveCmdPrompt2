@@ -1,3 +1,22 @@
+{
+  "Sid": "AllowUseOfKeyForExternalAccount",
+  "Effect": "Allow",
+  "Principal": {
+    "AWS": "arn:aws:iam::111111111111:root"
+  },
+  "Action": [
+    "kms:DescribeKey",
+    "kms:CreateGrant",
+    "kms:Encrypt",
+    "kms:Decrypt",
+    "kms:ReEncryptFrom",
+    "kms:ReEncryptTo",
+    "kms:GenerateDataKeyWithoutPlaintext"
+  ],
+  "Resource": "*"
+}
+
+
 aws --version
 
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.0.30.zip" -o "awscliv2.zip"
